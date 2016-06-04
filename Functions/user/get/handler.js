@@ -1,7 +1,15 @@
 'use strict';
+let exec = require('child_process').exec;
 
-module.exports.handler = function(event, context, cb) {
-  return cb(null, {
-    message: 'Go Serverless! Your Lambda function executed successfully!'
-  });
+exports.handler = (event, context) => {
+    const child = exec("./go_compiled_code " + event.userid, (error) => {
+        if(error){
+            console.log('Error:',error);
+            context.fail(error);
+        }
+    });
+    child.stdout.on('data',function(data){
+        console.log('Data:',data);
+        context.succeed(data)
+    });
 };
